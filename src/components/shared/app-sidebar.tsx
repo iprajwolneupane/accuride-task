@@ -1,5 +1,7 @@
 "use client";
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Sidebar,
     SidebarContent,
@@ -15,7 +17,6 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { CalendarDays, CheckSquare, LayoutList, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = [
     {
@@ -53,8 +54,8 @@ export function AppSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-2">
                             {navItems.map((item) => (
-                                <Link href={item.href}>
-                                    <SidebarMenuItem key={item.href}>
+                                <Link href={item.href} key={item.href}>
+                                    <SidebarMenuItem>
                                         <SidebarMenuButton
                                             isActive={pathname === item.href}
                                             className="data-active:bg-primary/90 data-active:hover:bg-primary data-active:text-white data-active:hover:text-white hover:bg-primary-foreground"
@@ -90,10 +91,29 @@ export function AppSidebar() {
                             </span>
                         </div>
                     </div>
-                    <LogOut
-                        className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-destructive transition-colors"
-                        onClick={() => signOut({ redirectUrl: "/login" })}
-                    />
+                    <AlertDialog>
+                        <AlertDialogTrigger>
+                            <LogOut
+                                className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-destructive transition-colors"
+                            />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    You will be logged out of your account and will need to sign in again to access it.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    variant={"destructive"}
+                                    onClick={() => signOut({ redirectUrl: "/login" })}
+                                >Logout</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
                 </div>
             </SidebarFooter>
         </Sidebar >

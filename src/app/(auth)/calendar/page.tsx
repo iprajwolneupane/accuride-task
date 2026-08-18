@@ -1,6 +1,9 @@
+import { getTodosByUser } from "@/actions/todo";
 import Header from "@/components/shared/header";
 
-export default function Calendar() {
+export default async function Calendar() {
+    const todos = await getTodosByUser();
+
     return (
         <>
             <Header>
