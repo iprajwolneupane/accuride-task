@@ -12,7 +12,7 @@ export default function LoginForm() {
         signIn.authenticateWithRedirect({
             strategy: "oauth_github",
             redirectUrl: "/sso-callback",
-            redirectUrlComplete: "/dashboard",
+            redirectUrlComplete: "/",
         });
     };
 
