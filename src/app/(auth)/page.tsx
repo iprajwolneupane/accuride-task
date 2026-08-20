@@ -2,14 +2,9 @@ import { getTodosByUser } from "@/actions/todo";
 import AddTodo from "@/components/shared/add-todo";
 import Header from "@/components/shared/header";
 import TodoCard from "@/components/shared/todo-card";
-import TodoForm from "@/components/shared/todo-form";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { PlusIcon } from "lucide-react";
 
 export default async function Home() {
   const todos = await getTodosByUser();
-  console.log("Home rendered, todo count:", todos.length, new Date().toISOString());
   return (
     <>
       <Header>

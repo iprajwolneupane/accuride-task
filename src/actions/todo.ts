@@ -7,6 +7,7 @@ import { TodoFormInterface } from "@/lib/schema";
 import { Todo } from "@/lib/type";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 export async function getTodosByUser(): Promise<Todo[]> {
     const user = await currentUser();
@@ -14,10 +15,12 @@ export async function getTodosByUser(): Promise<Todo[]> {
     if (!user) return [];
 
     const userEmail = user.emailAddresses[0]?.emailAddress;
+    const cookieStore = await cookies();
+    const locale = cookieStore.get("locale")?.value ?? DEFAULT_LOCALE;
 
     const { data } = await client.query<{ todos: Todo[] }>({
         query: GET_TODO_BY_USER,
-        variables: { userEmail, locale: "en" },
+        variables: { userEmail, locale: locale },
         fetchPolicy: "no-cache",
     });
 
@@ -68,6 +71,7 @@ export async function createTodo(values: TodoFormInterface) {
     });
 
     revalidatePath("/");
+    client.clearStore();
 
     return data.createTodo;
 }
