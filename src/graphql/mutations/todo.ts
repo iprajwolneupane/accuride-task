@@ -8,6 +8,39 @@ export const PUBLISH_TODO = gql`
   }
 `;
 
+export const CREATE_TODO = gql`
+  mutation CreateTodo(
+    $date: DateTime!
+    $userEmail: String!
+    $title: String!
+    $description: String!
+    $localizations: [TodoCreateLocalizationInput!]
+  ) {
+    createTodo(
+      data: {
+        date: $date
+        userEmail: $userEmail
+        isCompleted: false
+        title: $title
+        description: $description
+        localizations: { create: $localizations }
+      }
+    ) {
+      id
+      date
+      isCompleted
+      userEmail
+      title
+      description
+      localizations {
+        locale
+        title
+        description
+      }
+    }
+  }
+`;
+
 export const UPDATE_TODO_STATUS = gql`
   mutation UpdateTodoStatus($id: ID!, $isCompleted: Boolean!) {
     updateTodo(
@@ -18,4 +51,4 @@ export const UPDATE_TODO_STATUS = gql`
       isCompleted
     }
   }
-`;
+  `;
