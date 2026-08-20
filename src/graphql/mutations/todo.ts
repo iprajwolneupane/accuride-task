@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const PUBLISH_TODO = gql`
-  mutation PublishTodo($id: ID!) {
-    publishTodo(where: { id: $id }) {
+  mutation PublishTodo($id: ID!, $locales: [Locale!]) {
+    publishTodo(where: { id: $id }, locales: $locales) {
       id
     }
   }

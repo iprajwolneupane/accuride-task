@@ -65,9 +65,11 @@ export async function createTodo(values: TodoFormInterface) {
 
     if (!data?.createTodo?.id) throw new Error("Failed to create todo");
 
+    const allLocales = values.data.map((item) => item.locale);
+
     await client.mutate({
         mutation: PUBLISH_TODO,
-        variables: { id: data.createTodo.id },
+        variables: { id: data.createTodo.id, locales: allLocales },
     });
 
     revalidatePath("/");
