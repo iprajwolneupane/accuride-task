@@ -1,6 +1,6 @@
 "use server";
 import { DEFAULT_LOCALE } from "@/constant";
-import { CREATE_TODO, PUBLISH_TODO, UPDATE_TODO_STATUS } from "@/graphql/mutations/todo";
+import { CREATE_TODO, DELETE_TODO, PUBLISH_TODO, UNPUBLISH_TODO, UPDATE_TODO_STATUS } from "@/graphql/mutations/todo";
 import { GET_TODO_BY_USER } from "@/graphql/queries/todo";
 import client from "@/lib/apollo";
 import { TodoFormInterface } from "@/lib/schema";
@@ -71,7 +71,23 @@ export async function createTodo(values: TodoFormInterface) {
     });
 
     revalidatePath("/");
-    client.clearStore();
 
     return data.createTodo;
+}
+
+export async function deleteTodo(id: string) {
+    try {
+        await client.mutate({
+            mutation: UNPUBLISH_TODO,
+            variables: { id },
+        });
+        await client.mutate({
+            mutation: DELETE_TODO,
+            variables: { id },
+        });
+        revalidatePath("/");
+    } catch (error: any) {
+        console.error("Delete error:", error.graphQLErrors ?? error.networkError?.result ?? error);
+        throw new Error("Failed to delete todo");
+    }
 }

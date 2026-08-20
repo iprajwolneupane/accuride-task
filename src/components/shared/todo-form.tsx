@@ -7,12 +7,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast";
 import { LOCALE } from "@/constant";
 import { TodoFormInterface, todoSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void }) {
@@ -21,13 +22,31 @@ export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void
     const form = useForm({
         resolver: zodResolver(todoSchema),
     })
+    const [isLoading, setIsLoading] = useState(false);
 
     const { errors } = form.formState;
 
     const onSubmit = async (values: TodoFormInterface) => {
-        await createTodo(values);
-        router.refresh();
-        setOpen(false);
+        setIsLoading(true);
+        try {
+            await createTodo(values);
+            router.refresh();
+            setOpen(false);
+            form.reset();
+            toast.add({
+                title: "Operation successful!",
+                description: "Todo created successfully.",
+                type: "success",
+            })
+        } catch (e) {
+            toast.add({
+                title: "Operation failed!",
+                description: "Could not create Todo, try again.",
+                type: "error",
+            })
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const onDateSelect = useCallback((field: { onChange: (val: Date) => void }) => (val: Date) => {
@@ -125,7 +144,7 @@ export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void
                     />
                     <DialogFooter>
                         <Button type="button" variant="destructive" size="lg">Cancel</Button>
-                        <Button type="submit" size={"lg"}>Create Todo</Button>
+                        <Button type="submit" disabled={isLoading} size={"lg"}>{isLoading ? "Creating..." : "Create Todo"}</Button>
                     </DialogFooter>
                 </form>
             </Form>
