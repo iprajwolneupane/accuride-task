@@ -74,7 +74,7 @@ export default function TodoForm({ setOpen, data }: { setOpen: (open: boolean) =
             if (data) {
                 toast.add({
                     title: "Operation failed!",
-                    description: "Could not update Todo, try again.",
+                    description: "Could not  Todo, try again.",
                     type: "error",
                 })
             } else {

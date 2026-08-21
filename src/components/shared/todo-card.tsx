@@ -71,16 +71,57 @@ export default function TodoCard({ todo }: { todo: Todo }) {
                         </Badge>
                     }
                 </div>
-                <div className="flex gap-1 items-center">
-                    <Checkbox className="h-4.5 w-4.5" id={`box-${todo.id}`} checked={optimisticCompleted} onCheckedChange={updateComplete} disabled={isPending} />
-                    <label htmlFor={`box-${todo.id}`} className="text-sm text-gray-600">{isPending ? "Updating..." : "Mark Done"}</label>
-                </div>
+                <CompleteTodo todo={todo} />
             </div>
         </div>
     )
 }
 
-const EditTodo = ({ todo }: { todo: Todo }) => {
+export const CompleteTodo = ({ todo }: { todo: Todo }) => {
+    const [isPending, startTransition] = useTransition();
+    const [optimisticCompleted, setOptimisticCompleted] = useState(todo.isCompleted);
+    const router = useRouter();
+
+    const updateComplete = useCallback(() => {
+        const newValue = !optimisticCompleted;
+        setOptimisticCompleted(newValue);
+        startTransition(async () => {
+            try {
+                await updateTodoStatus(todo.id, newValue);
+                toast.add({
+                    title: "Operation successfull!",
+                    description: "Todo updated successfully.",
+                    type: "success",
+                });
+                router.refresh();
+            } catch {
+                setOptimisticCompleted(!newValue);
+                toast.add({
+                    title: "Operation failed!",
+                    description: "Could not update Todo, try again.",
+                    type: "error",
+                });
+            }
+        });
+    }, [optimisticCompleted, todo.id]);
+
+    return (
+        <div className="flex gap-1 items-center">
+            <Checkbox
+                className="h-4.5 w-4.5"
+                id={`box-${todo.id}`}
+                checked={optimisticCompleted}
+                onCheckedChange={updateComplete}
+                disabled={isPending}
+            />
+            <label htmlFor={`box-${todo.id}`} className="text-sm text-gray-600">
+                {isPending ? "Updating..." : "Mark Done"}
+            </label>
+        </div>
+    );
+};
+
+export const EditTodo = ({ todo }: { todo: Todo }) => {
 
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -134,16 +175,16 @@ const EditTodo = ({ todo }: { todo: Todo }) => {
     )
 }
 
-const DeleteTodo = ({ todo }: { todo: Todo }) => {
+export const DeleteTodo = ({ todo, onDelete }: { todo: Todo; onDelete?: () => void }) => {
 
     const router = useRouter();
-
     const [isDeleting, startDeleteTransition] = useTransition();
 
     const handleDelete = useCallback(() => {
         startDeleteTransition(async () => {
             try {
                 await deleteTodo(todo.id);
+                onDelete?.();
                 router.refresh();
                 toast.add({
                     title: "Operation successfull!",
@@ -158,7 +199,7 @@ const DeleteTodo = ({ todo }: { todo: Todo }) => {
                 });
             }
         });
-    }, [todo.id]);
+    }, [todo.id, onDelete]);
 
     return (
         <AlertDialog>
@@ -166,7 +207,9 @@ const DeleteTodo = ({ todo }: { todo: Todo }) => {
                 render={
                     <Button variant={"destructive"} size={"icon-lg"} className={"rounded-md"}>
                         <Trash2 />
-                    </Button>} />
+                    </Button>
+                }
+            />
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure you want to delete this todo?</AlertDialogTitle>
@@ -186,5 +229,5 @@ const DeleteTodo = ({ todo }: { todo: Todo }) => {
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-    )
-}
+    );
+};
