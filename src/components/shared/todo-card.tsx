@@ -1,15 +1,17 @@
 "use client";
-import { deleteTodo, updateTodoStatus } from "@/actions/todo";
+import { deleteTodo, getTodoById, updateTodoStatus } from "@/actions/todo";
+import TodoForm from "@/components/shared/todo-form";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
-import { Todo } from "@/lib/type";
+import { FullTodo, Todo } from "@/lib/type";
 import { cn, formatDate } from "@/lib/utils";
-import { Calendar, Edit2, Trash2, TriangleAlert } from "lucide-react";
+import { Calendar, Edit2, Loader2, Trash2, TriangleAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState, useTransition } from "react";
+import { startTransition, useCallback, useMemo, useState, useTransition } from "react";
 
 export default function TodoCard({ todo }: { todo: Todo }) {
 
@@ -50,9 +52,7 @@ export default function TodoCard({ todo }: { todo: Todo }) {
             <div className="flex gap-6 items-start justify-between">
                 <h2 className={cn("font-semibold max-h-12 line-clamp-2", optimisticCompleted && "line-through")}>{todo.title}</h2>
                 <div className=" group-hover:opacity-100 flex gap-1 opacity-0 transition-all duration-300 ease-in-out">
-                    <Button size={"icon-lg"} className="rounded-md bg-primary-foreground text-primary/70 hover:bg-primary/20 hover:text-primary">
-                        <Edit2 />
-                    </Button>
+                    <EditTodo todo={todo} />
                     <DeleteTodo todo={todo} />
                 </div>
             </div>
@@ -77,6 +77,60 @@ export default function TodoCard({ todo }: { todo: Todo }) {
                 </div>
             </div>
         </div>
+    )
+}
+
+const EditTodo = ({ todo }: { todo: Todo }) => {
+
+    const [open, setOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [fullTodo, setFullTodo] = useState<FullTodo | null>(null);
+
+    const handleOpen = useCallback(() => {
+        setIsLoading(true);
+        startTransition(async () => {
+            try {
+                const data = await getTodoById(todo.id);
+                if (!data) {
+                    toast.add({
+                        title: "Failed to load todo",
+                        description: "Could not fetch todo details, try again.",
+                        type: "error",
+                    });
+                    return;
+                }
+                setFullTodo(data);
+                setOpen(true);
+            } catch {
+                toast.add({
+                    title: "Failed to load todo",
+                    description: "Could not fetch todo details, try again.",
+                    type: "error",
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        });
+    }, [todo.id]);
+
+    return (
+        <>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger render={
+                    <Button onClick={handleOpen} size={"icon-lg"} className="rounded-md bg-primary-foreground text-primary/70 hover:bg-primary/20 hover:text-primary">
+                        <Edit2 />
+                    </Button>
+                } />
+                {
+                    isLoading ? <DialogContent className="min-w-2xl">
+                        <div className="flex flex-col items-center justify-center gap-3 py-16">
+                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">Loading todo details...</p>
+                        </div>
+                    </DialogContent> : <TodoForm setOpen={setOpen} data={fullTodo!} />
+                }
+            </Dialog>
+        </>
     )
 }
 

@@ -1,4 +1,7 @@
+import { LOCALE } from "@/constant";
 import { gql } from "@apollo/client";
+
+const localeCodes = LOCALE.map((l) => l.code);
 
 export const GET_TODO_BY_USER = gql`
  query GetTodosByUser($userEmail: String! $locale: Locale!) {
@@ -11,4 +14,22 @@ export const GET_TODO_BY_USER = gql`
     userEmail
   }
  }
+`;
+
+export const GET_TODO_BY_ID = gql`
+  query GetTodoById($id: ID!) {
+    todo(where: { id: $id }, locales: [${localeCodes}]) {
+      id
+      date
+      isCompleted
+      userEmail
+      title
+      description
+      localizations {
+        locale
+        title
+        description
+      }
+    }
+  }
 `;

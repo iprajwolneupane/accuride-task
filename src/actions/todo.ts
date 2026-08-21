@@ -1,10 +1,10 @@
 "use server";
 import { DEFAULT_LOCALE } from "@/constant";
-import { CREATE_TODO, DELETE_TODO, PUBLISH_TODO, UNPUBLISH_TODO, UPDATE_TODO_STATUS } from "@/graphql/mutations/todo";
-import { GET_TODO_BY_USER } from "@/graphql/queries/todo";
+import { CREATE_TODO, DELETE_TODO, PUBLISH_TODO, UNPUBLISH_TODO, UPDATE_TODO, UPDATE_TODO_STATUS } from "@/graphql/mutations/todo";
+import { GET_TODO_BY_ID, GET_TODO_BY_USER } from "@/graphql/queries/todo";
 import client from "@/lib/apollo";
 import { TodoFormInterface } from "@/lib/schema";
-import { Todo } from "@/lib/type";
+import { FullTodo, Todo } from "@/lib/type";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -26,6 +26,25 @@ export async function getTodosByUser(): Promise<Todo[]> {
 
 
     return data?.todos ?? [];
+}
+
+export async function getTodoById(id: string): Promise<FullTodo | null> {
+    const user = await currentUser();
+
+    if (!user) return null;
+
+    try {
+        const { data } = await client.query<{ todo: FullTodo }>({
+            query: GET_TODO_BY_ID,
+            variables: { id },
+            fetchPolicy: "no-cache",
+        });
+
+        return data?.todo ?? null;
+    } catch (error: any) {
+        console.error("Get todo error:", error.graphQLErrors ?? error.networkError?.result ?? error);
+        return null;
+    }
 }
 
 export async function updateTodoStatus(id: string, isCompleted: boolean) {
@@ -75,6 +94,44 @@ export async function createTodo(values: TodoFormInterface) {
     revalidatePath("/");
 
     return data.createTodo;
+}
+
+export async function updateTodo(id: string, values: TodoFormInterface) {
+    const baseLocale = values.data.find((item) => item.locale === DEFAULT_LOCALE);
+
+    if (!baseLocale) throw new Error(`Missing required "${DEFAULT_LOCALE}" locale entry`);
+
+    const localizations = values.data
+        .filter((item) => item.locale !== DEFAULT_LOCALE)
+        .map(({ title, description, locale }) => ({
+            locale,
+            update: { title, description },
+            create: { title, description },
+        }));
+
+    const { data } = await client.mutate<{ updateTodo: { id: string } }>({
+        mutation: UPDATE_TODO,
+        variables: {
+            id,
+            date: values.date,
+            title: baseLocale.title,
+            description: baseLocale.description,
+            localizations,
+        },
+    });
+
+    if (!data?.updateTodo?.id) throw new Error("Failed to update todo");
+
+    const allLocales = values.data.map((item) => item.locale);
+
+    await client.mutate({
+        mutation: PUBLISH_TODO,
+        variables: { id, locales: allLocales },
+    });
+
+    revalidatePath("/");
+
+    return data.updateTodo;
 }
 
 export async function deleteTodo(id: string) {

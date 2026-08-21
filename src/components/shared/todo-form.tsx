@@ -1,5 +1,5 @@
 "use client"
-import { createTodo } from "@/actions/todo";
+import { createTodo, updateTodo } from "@/actions/todo";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/datepicker";
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,19 +8,41 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
-import { LOCALE } from "@/constant";
+import { DEFAULT_LOCALE, LOCALE } from "@/constant";
 import { TodoFormInterface, todoSchema } from "@/lib/schema";
+import { FullTodo } from "@/lib/type";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+export default function TodoForm({ setOpen, data }: { setOpen: (open: boolean) => void, data?: FullTodo }) {
 
     const router = useRouter();
+
+    const defaultValues: TodoFormInterface = {
+        date: data ? new Date(data.date) : (undefined as unknown as Date),
+        data: LOCALE.map((locale) => {
+            if (locale.code === DEFAULT_LOCALE) {
+                return {
+                    locale: locale.code,
+                    title: data?.title ?? "",
+                    description: data?.description ?? "",
+                };
+            }
+            const existing = data?.localizations?.find((item) => item.locale === locale.code);
+            return {
+                locale: locale.code,
+                title: existing?.title ?? "",
+                description: existing?.description ?? "",
+            };
+        }) as unknown as TodoFormInterface['data'],
+    };
+
     const form = useForm({
         resolver: zodResolver(todoSchema),
+        defaultValues
     })
     const [isLoading, setIsLoading] = useState(false);
 
@@ -29,25 +51,44 @@ export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void
     const onSubmit = async (values: TodoFormInterface) => {
         setIsLoading(true);
         try {
-            await createTodo(values);
+            if (data) {
+                await updateTodo(data.id, values);
+                toast.add({
+                    title: "Operation successful!",
+                    description: "Todo updated successfully.",
+                    type: "success",
+                })
+            } else {
+                await createTodo(values);
+                toast.add({
+                    title: "Operation successful!",
+                    description: "Todo created successfully.",
+                    type: "success",
+                })
+            }
             router.refresh();
             setOpen(false);
             form.reset();
-            toast.add({
-                title: "Operation successful!",
-                description: "Todo created successfully.",
-                type: "success",
-            })
+
         } catch (e) {
-            toast.add({
-                title: "Operation failed!",
-                description: "Could not create Todo, try again.",
-                type: "error",
-            })
+            if (data) {
+                toast.add({
+                    title: "Operation failed!",
+                    description: "Could not update Todo, try again.",
+                    type: "error",
+                })
+            } else {
+                toast.add({
+                    title: "Operation failed!",
+                    description: "Could not create Todo, try again.",
+                    type: "error",
+                })
+            }
         } finally {
             setIsLoading(false);
         }
     }
+
 
     const onDateSelect = useCallback((field: { onChange: (val: Date) => void }) => (val: Date) => {
         field.onChange(val);
@@ -61,9 +102,9 @@ export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void
     return (
         <DialogContent className="min-w-2xl">
             <DialogHeader>
-                <DialogTitle>Add New Todo</DialogTitle>
+                <DialogTitle>{data ? "Update Todo" : "Add New Todo"}</DialogTitle>
                 <DialogDescription>
-                    Create a new task and add it to your todo list. You can update or delete it later.
+                    {data ? "Update your task details below." : "Create a new task and add it to your todo list. You can update or delete it later."}
                 </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -143,8 +184,8 @@ export default function TodoForm({ setOpen }: { setOpen: (open: boolean) => void
                         )}
                     />
                     <DialogFooter>
-                        <Button type="button" variant="destructive" size="lg">Cancel</Button>
-                        <Button type="submit" disabled={isLoading} size={"lg"}>{isLoading ? "Creating..." : "Create Todo"}</Button>
+                        <Button type="button" variant="destructive" size="lg" onClick={() => setOpen(false)}>Cancel</Button>
+                        <Button type="submit" disabled={isLoading} size={"lg"}>{isLoading ? data ? "Updating..." : "Creating..." : data ? "Update Todo" : "Create Todo"}</Button>
                     </DialogFooter>
                 </form>
             </Form>

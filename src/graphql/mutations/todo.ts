@@ -53,6 +53,38 @@ export const UPDATE_TODO_STATUS = gql`
   }
   `;
 
+export const UPDATE_TODO = gql`
+  mutation UpdateTodo(
+    $id: ID!
+    $date: DateTime!
+    $title: String!
+    $description: String!
+    $localizations: [TodoUpsertLocalizationInput!]
+  ) {
+    updateTodo(
+      where: { id: $id }
+      data: {
+        date: $date
+        title: $title
+        description: $description
+        localizations: { upsert: $localizations }
+      }
+    ) {
+      id
+      date
+      isCompleted
+      userEmail
+      title
+      description
+      localizations {
+        locale
+        title
+        description
+      }
+    }
+  }
+`;
+
 export const DELETE_TODO = gql`
   mutation DeleteTodo($id: ID!) {
     deleteTodo(where: { id: $id }) {
