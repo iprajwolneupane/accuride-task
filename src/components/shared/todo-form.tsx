@@ -101,7 +101,7 @@ export default function TodoForm({ setOpen, data }: { setOpen: (open: boolean) =
     );
 
     return (
-        <DialogContent className="min-w-2xl">
+        <DialogContent className="sm:min-w-2xl min-w-xs">
             <DialogHeader>
                 <DialogTitle>{data ? "Update Todo" : "Add New Todo"}</DialogTitle>
                 <DialogDescription>

@@ -163,7 +163,7 @@ export const EditTodo = ({ todo }: { todo: Todo }) => {
                     </Button>
                 } />
                 {
-                    isLoading ? <DialogContent className="min-w-2xl">
+                    isLoading ? <DialogContent className="sm:min-w-2xl min-w-xs">
                         <div className="flex flex-col items-center justify-center gap-3 py-16">
                             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                             <p className="text-sm text-muted-foreground">Loading todo details...</p>

@@ -105,10 +105,8 @@ export default function TodoCalendar({ todos }: { todos: Todo[] }) {
                     selectable
                 />
             </div>
-
-            {/* Todo Detail Dialog */}
             <Dialog open={!!selectedTodo} onOpenChange={() => setSelectedTodo(null)}>
-                <DialogContent className="min-w-2xl">
+                <DialogContent className="sm:min-w-2xl min-w-xs">
                     <DialogHeader>
                         <DialogTitle className={cn(selectedTodo?.isCompleted && "line-through")}>
                             {selectedTodo?.title}

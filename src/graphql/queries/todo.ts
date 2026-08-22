@@ -8,11 +8,13 @@ export const GET_TODO_BY_USER = gql`
     $where: TodoWhereInput!
     $locale: Locale!
     $first: Int!
+    $skip: Int
   ) {
     todos(
       where: $where
       locales: [$locale]
       first: $first
+      skip: $skip
       orderBy: date_DESC
     ) {
       id

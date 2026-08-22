@@ -1,7 +1,7 @@
 import { getTodosByUser } from "@/actions/todo";
 import AddTodo from "@/components/shared/add-todo";
 import Header from "@/components/shared/header";
-import TodoCard from "@/components/shared/todo-card";
+import TodoList from "@/components/shared/todo-list";
 import { ClipboardList } from "lucide-react";
 
 export default async function Home() {
@@ -14,18 +14,14 @@ export default async function Home() {
       </Header>
       <div className="flex flex-col gap-4 p-4 w-full">
         <div className="flex w-full justify-between">
-          <h2 className="font-semibold text-xl">Todo List ({todos.length})</h2>
+          <h2 className="font-semibold text-xl">Todo List</h2>
           <div>
             <AddTodo />
           </div>
         </div>
         {
           todos.length > 0 ?
-            <div className="grid grid-cols-3 gap-4">
-              {todos.map((todo) => (
-                <TodoCard key={todo.id} todo={todo} />
-              ))}
-            </div>
+            <TodoList initialTodos={todos} />
             : <div className="flex flex-col gap-3 w-full h-[calc(100vh-150px)] items-center justify-center text-center px-4">
               <div className="rounded-full bg-muted p-4">
                 <ClipboardList className="h-8 w-8 text-muted-foreground" />

@@ -9,7 +9,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-export async function getTodosByUser(from?: Date, to?: Date): Promise<Todo[]> {
+export async function getTodosByUser(from?: Date, to?: Date, skip = 0, first = 12): Promise<Todo[]> {
     const user = await currentUser();
     if (!user) return [];
 
@@ -33,7 +33,8 @@ export async function getTodosByUser(from?: Date, to?: Date): Promise<Todo[]> {
         variables: {
             where,
             locale,
-            first: hasDateRange ? 1000 : 10,
+            first: hasDateRange ? 1000 : first,
+            skip: hasDateRange ? 0 : skip,
         },
         fetchPolicy: "no-cache",
     });
