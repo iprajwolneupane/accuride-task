@@ -32,12 +32,13 @@ export default function TodoForm({ setOpen, data }: { setOpen: (open: boolean) =
                 };
             }
             const existing = data?.localizations?.find((item) => item.locale === locale.code);
+            if (!existing) return null;
             return {
                 locale: locale.code,
-                title: existing?.title ?? "",
-                description: existing?.description ?? "",
+                title: existing.title ?? "",
+                description: existing.description ?? "",
             };
-        }) as unknown as TodoFormInterface['data'],
+        }).filter(Boolean) as unknown as TodoFormInterface['data'],
     };
 
     const form = useForm({
@@ -108,6 +109,7 @@ export default function TodoForm({ setOpen, data }: { setOpen: (open: boolean) =
                 </DialogDescription>
             </DialogHeader>
             <Form {...form}>
+                <p>{JSON.stringify(form.getValues())}</p>
                 <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
                     <Tabs>
                         <TabsList className="w-full">
