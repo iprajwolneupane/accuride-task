@@ -1,8 +1,7 @@
 "use client";
-
 import { Todo } from "@/lib/type";
 import { Calendar, dateFnsLocalizer, View } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay, Locale } from "date-fns";
+import { format, parse, startOfWeek, getDay, Locale, startOfMonth, endOfMonth } from "date-fns";
 import { enUS, fr } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useCallback, useMemo, useState } from "react";
@@ -15,6 +14,7 @@ import Cookies from "js-cookie";
 import { DEFAULT_LOCALE } from "@/constant";
 import { CompleteTodo, DeleteTodo, EditTodo } from "@/components/shared/todo-card";
 import TodoForm from "@/components/shared/todo-form";
+import { useRouter } from "next/navigation";
 
 const DATE_FNS_LOCALES: Record<string, Locale> = {
     en: enUS,
@@ -34,6 +34,7 @@ export default function TodoCalendar({ todos }: { todos: Todo[] }) {
     const [view, setView] = useState<View>("month");
     const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const router = useRouter();
 
     const currentLocale = Cookies.get("locale") ?? DEFAULT_LOCALE;
     const calendarCulture = currentLocale.split("_")[0];
@@ -71,6 +72,14 @@ export default function TodoCalendar({ todos }: { todos: Todo[] }) {
         setSelectedDate(start);
     }, []);
 
+
+    const handleNavigate = useCallback((newDate: Date) => {
+        setDate(newDate);
+        const from = startOfMonth(newDate).toISOString();
+        const to = endOfMonth(newDate).toISOString();
+        router.push(`?from=${from}&to=${to}`);
+    }, []);
+
     const isOverdue = useMemo(
         () => selectedTodo ? new Date(selectedTodo.date).getTime() < Date.now() && !selectedTodo.isCompleted : false,
         [selectedTodo]
@@ -87,9 +96,9 @@ export default function TodoCalendar({ todos }: { todos: Todo[] }) {
                     date={date}
                     view={view}
                     culture={calendarCulture}
-                    onNavigate={setDate}
                     onView={setView}
                     views={["month", "day"]}
+                    onNavigate={handleNavigate}
                     eventPropGetter={eventPropGetter}
                     onSelectEvent={handleSelectEvent}
                     onSelectSlot={handleSelectSlot}

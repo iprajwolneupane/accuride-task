@@ -109,7 +109,6 @@ export default function TodoForm({ setOpen, data }: { setOpen: (open: boolean) =
                 </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-                <p>{JSON.stringify(form.getValues())}</p>
                 <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
                     <Tabs>
                         <TabsList className="w-full">

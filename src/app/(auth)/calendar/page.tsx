@@ -1,11 +1,20 @@
 import { getTodosByUser } from "@/actions/todo";
-import AddTodo from "@/components/shared/add-todo";
 import Header from "@/components/shared/header";
 import TodoCalendar from "@/components/shared/todo-calendar";
-import dynamic from "next/dynamic";
+import { startOfMonth, endOfMonth } from "date-fns";
 
-export default async function Calendar() {
-    const todos = await getTodosByUser();
+interface CalendarPageProps {
+    searchParams: Promise<{ from?: string; to?: string }>;
+}
+
+export default async function Calendar({ searchParams }: CalendarPageProps) {
+    const { from, to } = await searchParams;
+
+    const fromDate = from ? new Date(from) : startOfMonth(new Date());
+    const toDate = to ? new Date(to) : endOfMonth(new Date());
+
+    const todos = await getTodosByUser(fromDate, toDate);
+
     return (
         <>
             <Header>

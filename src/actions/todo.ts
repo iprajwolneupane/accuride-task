@@ -9,24 +9,38 @@ import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-export async function getTodosByUser(): Promise<Todo[]> {
+export async function getTodosByUser(from?: Date, to?: Date): Promise<Todo[]> {
     const user = await currentUser();
-
     if (!user) return [];
 
     const userEmail = user.emailAddresses[0]?.emailAddress;
     const cookieStore = await cookies();
     const locale = cookieStore.get("locale")?.value ?? DEFAULT_LOCALE;
 
+    const hasDateRange = Boolean(from && to);
+
+    const where: Record<string, any> = {
+        userEmail,
+    };
+
+    if (hasDateRange) {
+        where.date_gte = from;
+        where.date_lte = to;
+    }
+
     const { data } = await client.query<{ todos: Todo[] }>({
         query: GET_TODO_BY_USER,
-        variables: { userEmail, locale: locale },
+        variables: {
+            where,
+            locale,
+            first: hasDateRange ? 1000 : 10,
+        },
         fetchPolicy: "no-cache",
     });
 
-
     return data?.todos ?? [];
 }
+
 
 export async function getTodoById(id: string): Promise<FullTodo | null> {
     const user = await currentUser();
