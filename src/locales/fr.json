@@ -1,0 +1,62 @@
+{
+    "common": {
+        "appTitle": "Tâches Accuride",
+        "appDescription": "Gestionnaire de tâches",
+        "signIn": "Connectez-vous pour gérer votre flux de travail",
+        "github": "Se connecter avec GitHub",
+        "google": "Se connecter avec Google",
+        "or": "ou",
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "deleting": "Suppression...",
+        "saving": "Enregistrement...",
+        "creating": "Création...",
+        "updating": "Mise à jour...",
+        "saveChanges": "Enregistrer les modifications",
+        "retry": "Réessayer",
+        "tryAgain": "Réessayer"
+    },
+    "sidebar": {
+        "myTodos": "Mes tâches",
+        "calendar": "Calendrier"
+    },
+    "message": {
+        "logOut": "Se déconnecter",
+        "logOutConfirm": "Se déconnecter de Tâches Accuride ?",
+        "logOutConfirmDescription": "Vous devrez vous reconnecter pour accéder à vos tâches et à votre calendrier.",
+        "deleteConfirm": "Supprimer cette tâche ?",
+        "deleteConfirmDescription": "Cette action est irréversible. La tâche et ses traductions seront définitivement supprimées.",
+        "errorGeneric": "Nous sommes désolés, un problème est survenu"
+    },
+    "todo": {
+        "headerTitle": "Tâches actives",
+        "headerDescription": "Gérez vos tâches et vos échéances à venir",
+        "title": "Liste des tâches",
+        "noTitle": "Aucune tâche pour le moment",
+        "noDescription": "Vous êtes à jour. Créez votre première tâche pour commencer.",
+        "add": "Ajouter une tâche",
+        "addTitle": "Ajouter une nouvelle tâche",
+        "addDescription": "Créez une nouvelle tâche pour votre liste. Vous pourrez la modifier ou la supprimer à tout moment.",
+        "editTitle": "Modifier la tâche",
+        "editDescription": "Mettez à jour les détails de votre tâche et ses descriptions traduites ci-dessous.",
+        "done": "Terminé",
+        "completed": "Terminée",
+        "overdue": "En retard",
+        "markDone": "Terminé",
+        "fieldTitle": "Titre",
+        "fieldDescription": "Description",
+        "fieldDueDate": "Date d'échéance",
+        "pickDueDate": "Choisir une date d'échéance",
+        "placeholderTitle": "ex. Préparer la planification trimestrielle",
+        "placeholderDescription": "Fournissez des détails sur votre tâche...",
+        "required": "Requis",
+        "loadingDetails": "Chargement des détails de la tâche...",
+        "loadMoreError": "Impossible de charger plus de tâches.",
+        "retryLoading": "Réessayer de charger les tâches"
+    },
+    "calendar": {
+        "headerTitle": "Calendrier",
+        "headerDescription": "Consultez et planifiez vos tâches tout au long du mois"
+    }
+}
+

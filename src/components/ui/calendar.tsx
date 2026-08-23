@@ -100,6 +100,7 @@ function Calendar({
           defaultClassNames.caption_label,
           classNames?.caption_label,
         ),
+        // @ts-expect-error react-day-picker v9 table classNames key compatibility
         table: cn('w-full border-collapse', classNames?.table),
         weekdays: cn('flex', defaultClassNames.weekdays, classNames?.weekdays),
         weekday: cn(

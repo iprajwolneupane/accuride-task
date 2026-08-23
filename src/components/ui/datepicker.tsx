@@ -48,3 +48,5 @@ export const DatePicker = React.forwardRef<
         </Popover>
     );
 });
+
+DatePicker.displayName = "DatePicker";

@@ -1,0 +1,61 @@
+{
+    "common": {
+        "appTitle": "Accuride Tasks",
+        "appDescription": "Task Manager",
+        "signIn": "Sign in to manage your workflow",
+        "github": "Sign in with GitHub",
+        "google": "Sign in with Google",
+        "or": "or",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "saving": "Saving...",
+        "creating": "Creating...",
+        "updating": "Updating...",
+        "saveChanges": "Save Changes",
+        "retry": "Retry",
+        "tryAgain": "Try Again"
+    },
+    "sidebar": {
+        "myTodos": "My Todos",
+        "calendar": "Calendar"
+    },
+    "message": {
+        "logOut": "Log Out",
+        "logOutConfirm": "Log Out from Accuride Tasks?",
+        "logOutConfirmDescription": "You will need to sign in again to access your tasks and calendar.",
+        "deleteConfirm": "Delete this task?",
+        "deleteConfirmDescription": "This action cannot be undone. The task and its localizations will be permanently deleted.",
+        "errorGeneric": "We're sorry, something went wrong"
+    },
+    "todo": {
+        "headerTitle": "Active Todos",
+        "headerDescription": "Manage your tasks and upcoming deadlines",
+        "title": "Task List",
+        "noTitle": "No todos yet",
+        "noDescription": "You're all caught up. Create your first task to get started.",
+        "add": "Add Todo",
+        "addTitle": "Add New Todo",
+        "addDescription": "Create a new task for your list. You can update or delete it anytime.",
+        "editTitle": "Edit Todo",
+        "editDescription": "Update your task details and localized descriptions below.",
+        "done": "Done",
+        "completed": "Completed",
+        "overdue": "Overdue",
+        "markDone": "Done",
+        "fieldTitle": "Title",
+        "fieldDescription": "Description",
+        "fieldDueDate": "Due Date",
+        "pickDueDate": "Pick a due date",
+        "placeholderTitle": "e.g. Prepare quarterly sprint planning",
+        "placeholderDescription": "Provide details about your task...",
+        "required": "Required",
+        "loadingDetails": "Loading task details...",
+        "loadMoreError": "We couldn't load more tasks.",
+        "retryLoading": "Retry loading tasks"
+    },
+    "calendar": {
+        "headerTitle": "Calendar",
+        "headerDescription": "View and schedule your tasks across the month"
+    }
+}
